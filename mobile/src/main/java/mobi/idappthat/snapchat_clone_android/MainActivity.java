@@ -24,6 +24,7 @@ import mobi.idappthat.snapchat_clone_android.fragments.StoriesFragment;
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CAMERA = 0;
+    private CameraFragment cameraFragment;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -60,8 +61,12 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if (mViewPager.getCurrentItem() != 1) {
+                    mViewPager.setCurrentItem(1);
+                } else {
+                    cameraFragment.takePicture();
+                }
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
         });
 
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
             requestCameraPermission();
         }
 
+        mViewPager.setCurrentItem(1);
 
     }
 
@@ -81,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PERMISSION_REQUEST_CAMERA) {
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 mViewPager.setCurrentItem(1);
+                mViewPager.requestLayout();
             }
         }
     }
@@ -131,7 +138,8 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     return ChatFragment.newInstance();
                 case 2:
-                    return CameraFragment.newInstance();
+                    cameraFragment = CameraFragment.newInstance();
+                    return cameraFragment;
                 default:
                     return StoriesFragment.newInstance();
             }
