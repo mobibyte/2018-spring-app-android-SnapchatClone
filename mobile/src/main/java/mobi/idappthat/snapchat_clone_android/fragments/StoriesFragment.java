@@ -27,7 +27,6 @@ public class StoriesFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View storiesView = inflater.inflate(R.layout.fragment_stories, container, false);
-        return storiesView;
+        return inflater.inflate(R.layout.fragment_stories, container, false);
     }
 }

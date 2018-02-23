@@ -27,7 +27,6 @@ public class ChatFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View chatView = inflater.inflate(R.layout.fragment_chat, container, false);
-        return chatView;
+        return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 }
