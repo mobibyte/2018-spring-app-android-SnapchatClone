@@ -105,27 +105,20 @@ public class CameraFragment extends Fragment {
 
     }
 
-    Camera.PictureCallback pictureCallback=new Camera.PictureCallback() {
+    Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
 
             try {
                 String root = Environment.getExternalStorageDirectory().toString();
                 File myDir = new File(root + "/snap-clone");
                 myDir.mkdir();
-                File file = new File (myDir, "test.jpeg");
+                File file = new File(myDir, "test.jpeg");
                 file.createNewFile();
                 FileOutputStream out = new FileOutputStream(file);
                 out.write(data);
                 out.flush();
                 out.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
