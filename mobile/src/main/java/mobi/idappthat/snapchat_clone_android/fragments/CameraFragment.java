@@ -3,13 +3,25 @@ package mobi.idappthat.snapchat_clone_android.fragments;
 import android.app.Activity;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
 
 import mobi.idappthat.snapchat_clone_android.R;
 import mobi.idappthat.snapchat_clone_android.Views.CameraPreview;
@@ -23,11 +35,12 @@ public class CameraFragment extends Fragment {
     /**
      * ID of the Camera that needs to be accessed.
      */
-    private static final int CAMERA_ID = 0;
+    private static final int CAMERA_ID = 1;
 
     private CameraPreview mPreview;
     private Camera mCamera;
     private Activity mActivity;
+    private ImageView imageCaptured;
 
     public CameraFragment() {
 
@@ -71,8 +84,10 @@ public class CameraFragment extends Fragment {
 
             mPreview = new CameraPreview(mActivity, mCamera, cameraInfo, displayRotation);
 
-            FrameLayout preview = (FrameLayout) view.findViewById(R.id.camera_preview);
+            FrameLayout preview = view.findViewById(R.id.camera_preview);
             preview.addView(mPreview);
+
+            imageCaptured = view.findViewById(R.id.iv_captured);
 
         }
 
@@ -88,4 +103,34 @@ public class CameraFragment extends Fragment {
 
         return c;
     }
+
+    public void takePicture() {
+        mCamera.takePicture(null, null, pictureCallback);
+
+    }
+
+    Camera.PictureCallback pictureCallback=new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+
+            try {
+                String root = Environment.getExternalStorageDirectory().toString();
+                File myDir = new File(root + "/snap-clone");
+                File file = new File (myDir, "test.jpeg");
+                Ion.with(mActivity.getApplicationContext())
+                        .load("http://localhost:8080/upload")
+                        .setMultipartParameter("name", "source")
+                        .setMultipartFile("image", "image/jpeg", file)
+                        .asJsonObject()
+                        .setCallback(new FutureCallback<JsonObject>() {
+                            @Override
+                            public void onCompleted(Exception e, JsonObject result) {
+                                //do stuff with result
+                            }
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+        }
+    };
 }

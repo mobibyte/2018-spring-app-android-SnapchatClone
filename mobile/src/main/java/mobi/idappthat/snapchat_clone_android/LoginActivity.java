@@ -10,35 +10,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
 
-import mobi.idappthat.snapchat_clone_android.Utils.HttpCallback;
-import mobi.idappthat.snapchat_clone_android.Utils.HttpUtil;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 /**
  * Created by kolten on 2/20/18.
  */
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final MediaType JSON
-            = MediaType.parse("application/json; charset=utf-8");
 
     EditText emailEditText;
     EditText passwordEditText;
     Button login;
     Button register;
-    OkHttpClient client;
-    Request request;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,7 +43,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         login.setOnClickListener(this);
         register.setOnClickListener(this);
-        client = new OkHttpClient();
     }
 
     @Override
@@ -60,7 +50,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (view.getId()){
             case R.id.sign_in_button:
                 if(validated()) {
-                    login();
+                    // login();
+                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
                 break;
             case R.id.register_button:
@@ -85,36 +78,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // API call to server, create User object and assign values
         // Then start the new activity, pass the user object in the intent
         // Kill this activity with finish
-        JSONObject json = new JSONObject();
+        JsonObject json = new JsonObject();
         try {
-            json.put("email", emailEditText.getText().toString());
-            json.put("password", passwordEditText.getText().toString());
+            json.addProperty("email", emailEditText.getText().toString());
+            json.addProperty("password", passwordEditText.getText().toString());
         } catch (Exception err) {
             Log.d("ERROR", err.toString());
         }
-        String jsontoString = json.toString();
-        HttpUtil httpUtil = new HttpUtil();
-        String url = "http://localhost:8080";
-        httpUtil.post(url, jsontoString, new HttpCallback() {
-            @Override
-            public void onFailure(Response response, Throwable throwable) {
-
-            }
-
-            @Override
-            public void onSuccess(final Response response) {
-                LoginActivity.this.runOnUiThread(new Runnable() {
+        String url = "localhost:8080/user/login";
+        Ion.with(getBaseContext())
+                .load(url)
+                .setJsonObjectBody(json)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
                     @Override
-                    public void run() {
-                        if (response.isSuccessful()) {
-                            Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                    public void onCompleted(Exception e, JsonObject result) {
+                        Log.d("Login", result.toString());
+                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
                 });
-            }
-        });
 
     }
 }
