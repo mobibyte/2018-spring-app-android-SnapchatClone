@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -17,6 +18,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabSelectListener;
+
 import mobi.idappthat.snapchat_clone_android.fragments.CameraFragment;
 import mobi.idappthat.snapchat_clone_android.fragments.ChatFragment;
 import mobi.idappthat.snapchat_clone_android.fragments.StoriesFragment;
@@ -25,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CAMERA = 0;
     private CameraFragment cameraFragment;
+    private BottomBar bottomBar;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -47,28 +52,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mViewPager.getCurrentItem() != 1) {
-                    mViewPager.setCurrentItem(1);
-                } else {
-                    cameraFragment.takePicture();
-                }
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-            }
-        });
+        bottomBar = findViewById(R.id.bottomBar);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestCameraPermission();
@@ -76,6 +69,26 @@ public class MainActivity extends AppCompatActivity {
 
         mViewPager.setCurrentItem(1);
 
+        final BottomBar bottomBar = findViewById(R.id.bottomBar);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(int tabId) {
+                switch (tabId) {
+                    case R.id.tab_chat:
+                        mViewPager.setCurrentItem(0);
+                        bottomBar.setBackgroundColor(getResources().getColor(R.color.transparent));
+                        break;
+                    case R.id.tab_snap:
+                        mViewPager.setCurrentItem(1);
+                        bottomBar.setBackgroundColor(getResources().getColor(R.color.transparent));
+                        break;
+                    case R.id.tab_stories:
+                        mViewPager.setCurrentItem(2);
+                        bottomBar.setBackgroundColor(getResources().getColor(R.color.transparent));
+                        break;
+                }
+            }
+        });
     }
 
     private void requestCameraPermission() {

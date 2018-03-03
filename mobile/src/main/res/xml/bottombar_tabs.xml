@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        barColorWhenSelected="@color/transparent"
+        icon="@drawable/ic_chat"
+        id="@+id/tab_chat" />
+    <tab
+        barColorWhenSelected="@color/transparent"
+        icon="@drawable/ic_circle"
+        id="@+id/tab_snap" />
+    <tab
+        barColorWhenSelected="@color/transparent"
+        icon="@drawable/ic_stories"
+        id="@+id/tab_stories" />
+</tabs>
